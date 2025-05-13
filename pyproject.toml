@@ -1,0 +1,11 @@
+[project]
+name = "azure-wiki-search-server"
+version = "0.1.0"
+description = "Help you search on azure wiki and answer your question"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "azure-devops>=7.1.0b4",
+    "httpx>=0.28.1",
+    "mcp[cli]>=1.8.0",
+]
