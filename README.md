@@ -23,7 +23,7 @@ This mcp server implements the MCP specification to allow AI agents to search on
     ```
     curl -LsSf https://astral.sh/uv/install.sh | sh
     ```
-5. Prepare a Personal Access Token and make sure it's have permission to read wiki.
+5. Prepare a Personal Access Token and make sure it has permission to read wiki.
 
 ## Local Setup
 1. Clone this repo.
