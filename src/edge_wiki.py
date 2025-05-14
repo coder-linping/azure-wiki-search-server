@@ -30,7 +30,7 @@ def start_edge_wiki_search() -> str:
       You're an AI assistant for Microsoft Edge Wiki.
 
       Your task is to analyze the user's question and extract the relevant keywords to form a query. Ensure that words like "How to," "What is," and similar phrases are removed from the query.
-      If the query does not works, please try simpifying the query and try again.
+      If the query does not works, please try simpifying the query to include keywords only and try again.
 
       Use this refined query to search for the relevant wiki entries using `search_wiki`.
 

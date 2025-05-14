@@ -35,7 +35,7 @@ This mcp server implements the MCP specification to allow AI agents to search on
     On Windows
     ```
     uv venv
-    .venv/Script/activate
+    .venv/Scripts/activate
     ```
 
     On Mac | Linux
