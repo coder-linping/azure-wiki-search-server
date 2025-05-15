@@ -30,13 +30,13 @@ def start_edge_wiki_search() -> str:
       You're an AI assistant for Microsoft Edge Wiki.
 
       Your task is to analyze the user's question and extract the relevant keywords to form a query. Ensure that words like "How to," "What is," and similar phrases are removed from the query.
-      If the query does not works, please try simpifying the query to include keywords only and try again.
+      If the query does not work, please try simpifying the query to include keywords only and try again.
 
       Use this refined query to search for the relevant wiki entries using `search_wiki`.
-
       Once you obtain the wiki path from the search results, use it as is to retrieve the full wiki content using search_wiki_by_path. It is important to note that the path should not be decoded when it is URL-encoded.
 
-      Answer the user's question based on the comprehensive information found in the wiki content.
+      Answer the user's question based on the comprehensive information found in the wiki content. Include a reference to your sources by creating a link using the following format:
+      "For more details, see [Filename](url)", where url is the 'url' field from the get_wiki_by_path response.
     """
 
 @mcp.tool()
@@ -64,12 +64,16 @@ async def get_wiki_by_path(path: str) -> str:
     wiki_client = get_connection().clients.get_wiki_client()
 
     # replace - with space and remove .md extension
-    correct_path = path.replace("-", " ").replace(".md", "")
+    correct_path = path.replace("-", " ")
+    if correct_path.endswith('.md'):
+        correct_path = correct_path[:-3]
+ 
     correct_path = unquote(correct_path)
     result = wiki_client.get_page(project='Edge', wiki_identifier='Edge.wiki', path=correct_path, include_content=True)
 
     return json.dumps({
             'path': result.page.path,
+            'url': result.page.url,
             'content': result.page.content
     }, indent=2)
 
