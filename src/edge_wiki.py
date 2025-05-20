@@ -1,7 +1,7 @@
 import json
 import os
 from azure.devops.connection import Connection
-from azure.devops.v7_0.search.models import WikiSearchRequest 
+from azure.devops.v7_0.search.models import WikiSearchRequest
 from msrest.authentication import BasicAuthentication
 from mcp.server.fastmcp import FastMCP
 from urllib.parse import unquote
@@ -16,11 +16,16 @@ def get_connection() -> Connection:
     personal_access_token = os.getenv('PAT')
     if not personal_access_token:
         raise ValueError("PAT environment variable is not set")
-        
+
     organization_url = f'https://dev.azure.com/{org}'
     credentials = BasicAuthentication('', personal_access_token)
     connection = Connection(base_url=organization_url, creds=credentials)
     return connection
+
+def get_wiki_url(project_id: str, wiki_id: str, path: str) -> str:
+    """ Construct the URL for the Edge Wiki page """
+    correct_path = path.replace("-", "%20").replace(".md", "")
+    return f'https://dev.azure.com/{org}/{project_id}/_wiki/wikis/{wiki_id}/?pagePath={correct_path}'
 
 @mcp.prompt()
 def start_edge_wiki_search() -> str:
@@ -42,7 +47,7 @@ def start_edge_wiki_search() -> str:
 @mcp.tool()
 async def search_wiki(query: str) -> str:
     """ Search Edge Wiki to find related material for {query}"""
-    
+
     try:
         search_client = get_connection().clients.get_search_client()
 
@@ -51,14 +56,15 @@ async def search_wiki(query: str) -> str:
 
         return json.dumps([{
             'file_name': wiki.file_name,
-            'path': wiki.path 
+            'path': wiki.path,
+            'wiki_id': wiki.wiki.id,
+            'url': get_wiki_url(wiki.project.id, wiki.wiki.id, wiki.path),
         } for wiki in result.results], indent=2)
-
     except Exception as e:
-        return f"Error searching wiki: {str(e)}"  
+        return f"Error searching wiki: {str(e)}"
 
 @mcp.tool()
-async def get_wiki_by_path(path: str) -> str:
+async def get_wiki_by_path(path: str, wiki_id: str) -> str:
     """ Get Edge Wiki content by path returned from search_wiki"""
 
     wiki_client = get_connection().clients.get_wiki_client()
@@ -67,13 +73,12 @@ async def get_wiki_by_path(path: str) -> str:
     correct_path = path.replace("-", " ")
     if correct_path.endswith('.md'):
         correct_path = correct_path[:-3]
- 
+
     correct_path = unquote(correct_path)
-    result = wiki_client.get_page(project='Edge', wiki_identifier='Edge.wiki', path=correct_path, include_content=True)
+    result = wiki_client.get_page(project, wiki_identifier=wiki_id, path=correct_path, include_content=True)
 
     return json.dumps({
             'path': result.page.path,
-            'url': result.page.url,
             'content': result.page.content
     }, indent=2)
 
