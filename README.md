@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/coder-linping-azure-wiki-search-server-badge.png)](https://mseep.ai/app/coder-linping-azure-wiki-search-server)
+
 # Azure Wiki Search Server
 This mcp server implements the MCP specification to allow AI agents to search on Azure wiki.
 
