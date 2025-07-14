@@ -5,17 +5,20 @@ from azure.devops.v7_0.search.models import WikiSearchRequest
 from msrest.authentication import BasicAuthentication
 from mcp.server.fastmcp import FastMCP
 from urllib.parse import unquote
+from azure_token_manager import AzureTokenManager
 
 mcp = FastMCP("edge_wiki")
 
 org = os.getenv('ORG', 'microsoft')
 project = os.getenv('PROJECT', 'Edge')
 
+# Initialize the token manager instance
+azure_token_manager = AzureTokenManager()
+
 def get_connection() -> Connection:
-    # Get PAT from environment variable
-    personal_access_token = os.getenv('PAT')
+    personal_access_token = azure_token_manager.get_access_token()
     if not personal_access_token:
-        raise ValueError("PAT environment variable is not set")
+        raise ValueError("No valid access token found. Please restart the server.")
 
     organization_url = f'https://dev.azure.com/{org}'
     credentials = BasicAuthentication('', personal_access_token)
